@@ -1,0 +1,11 @@
+<UserControl x:Class="User.AppVolumeController.VolumeLedEffectControl"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+    <StackPanel>
+        <TextBlock Text="Канал" FontWeight="SemiBold" Margin="0,0,0,6" />
+        <TextBox Width="72" HorizontalAlignment="Left" Padding="8,4" TextAlignment="Center"
+                 Text="{Binding ChannelNumber, UpdateSourceTrigger=LostFocus}" />
+        <TextBlock Margin="0,8,0,0" Opacity="0.7" TextWrapping="Wrap"
+                   Text="Цвета задаются в плагине «Громкость приложений». Start position и Led count задают, с какой кнопки начать и сколько кнопок зажечь." />
+    </StackPanel>
+</UserControl>

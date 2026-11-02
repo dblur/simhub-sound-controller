@@ -1,0 +1,271 @@
+<UserControl x:Class="User.AppVolumeController.SettingsControl"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:local="clr-namespace:User.AppVolumeController"
+             xmlns:styles="clr-namespace:SimHub.Plugins.Styles;assembly=SimHub.Plugins"
+             xmlns:ui="clr-namespace:SimHub.Plugins.UI;assembly=SimHub.Plugins"
+             mc:Ignorable="d">
+    <UserControl.Resources>
+        <local:EqualsIntConverter x:Key="EqualsInt" />
+        <local:EmptyToVisibilityConverter x:Key="EmptyToVis" />
+        <local:InverseBoolToVisibilityConverter x:Key="InverseBoolVis" />
+        <local:RgbBrushConverter x:Key="RgbBrush" />
+
+        <Style x:Key="MixerButton" TargetType="Button">
+            <Setter Property="Height" Value="34" />
+            <Setter Property="MinWidth" Value="40" />
+            <Setter Property="Padding" Value="12,4" />
+            <Setter Property="Cursor" Value="Hand" />
+            <Setter Property="Background" Value="#18FFFFFF" />
+            <Setter Property="BorderBrush" Value="#30FFFFFF" />
+            <Setter Property="BorderThickness" Value="1" />
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Border x:Name="Bd" Background="{TemplateBinding Background}" BorderBrush="{TemplateBinding BorderBrush}"
+                                BorderThickness="1" CornerRadius="7">
+                            <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center" Margin="{TemplateBinding Padding}" />
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter TargetName="Bd" Property="Background" Value="#2EFFFFFF" />
+                            </Trigger>
+                            <Trigger Property="IsPressed" Value="True">
+                                <Setter TargetName="Bd" Property="Background" Value="#44FFFFFF" />
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <Style x:Key="StepChip" TargetType="RadioButton">
+            <Setter Property="Margin" Value="0,0,8,0" />
+            <Setter Property="Cursor" Value="Hand" />
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="RadioButton">
+                        <Border x:Name="Bd" CornerRadius="7" Padding="14,7" BorderThickness="1"
+                                BorderBrush="#30FFFFFF" Background="Transparent">
+                            <TextBlock Text="{TemplateBinding Content}" HorizontalAlignment="Center" />
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsChecked" Value="True">
+                                <Setter TargetName="Bd" Property="Background" Value="{DynamicResource AccentColorBrush}" />
+                                <Setter TargetName="Bd" Property="BorderBrush" Value="{DynamicResource AccentColorBrush}" />
+                            </Trigger>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter TargetName="Bd" Property="BorderBrush" Value="{DynamicResource AccentColorBrush}" />
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+    </UserControl.Resources>
+
+    <ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled">
+        <StackPanel Margin="2,2,10,18">
+            <Grid Margin="0,0,0,14">
+                <StackPanel VerticalAlignment="Center" Margin="0,0,180,0">
+                    <TextBlock Text="Каналы" FontSize="20" FontWeight="SemiBold" />
+                    <TextBlock Margin="0,4,0,0" Opacity="0.65" TextWrapping="Wrap"
+                               Text="Один канал — одно приложение и свои кнопки. Номер слева совпадает с ChannelN в свойствах подсветки." />
+                </StackPanel>
+                <styles:SHButtonPrimary x:Name="AddButton" HorizontalAlignment="Right" VerticalAlignment="Center"
+                                        Click="AddChannel_Click" Content="Добавить канал" />
+            </Grid>
+
+            <Border x:Name="EmptyState" CornerRadius="10" Padding="18" Margin="0,0,0,12"
+                    Background="#12FFFFFF" BorderBrush="#24FFFFFF" BorderThickness="1" Visibility="Collapsed">
+                <TextBlock TextWrapping="Wrap" Opacity="0.8"
+                           Text="Каналов нет. Нажмите «Добавить канал», выберите приложение и назначьте кнопки устройства." />
+            </Border>
+
+            <ItemsControl ItemsSource="{Binding Settings.Channels}">
+                <ItemsControl.ItemTemplate>
+                    <DataTemplate>
+                        <Border Margin="0,0,0,14" Padding="16" CornerRadius="10"
+                                Background="#12FFFFFF" BorderBrush="#24FFFFFF" BorderThickness="1">
+                            <StackPanel>
+                                <Grid>
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="Auto" />
+                                        <ColumnDefinition Width="*" />
+                                        <ColumnDefinition Width="Auto" />
+                                        <ColumnDefinition Width="Auto" />
+                                    </Grid.ColumnDefinitions>
+                                    <Border Width="36" Height="36" CornerRadius="8" Margin="0,0,12,0"
+                                            Background="{DynamicResource AccentColorBrush}" VerticalAlignment="Center"
+                                            ToolTip="{Binding PropertyHint}">
+                                        <TextBlock Text="{Binding Slot}" FontWeight="Bold" FontSize="16"
+                                                   HorizontalAlignment="Center" VerticalAlignment="Center"
+                                                   Foreground="{DynamicResource IdealForegroundColorBrush}" />
+                                    </Border>
+                                    <Grid Grid.Column="1" VerticalAlignment="Center">
+                                        <TextBox Text="{Binding Name, UpdateSourceTrigger=PropertyChanged}"
+                                                 Padding="8,6" FontSize="15" LostFocus="Persist_Click" />
+                                        <TextBlock Text="Название, например Discord" IsHitTestVisible="False"
+                                                   Opacity="0.4" Margin="12,0,0,0" VerticalAlignment="Center"
+                                                   Visibility="{Binding Name, Converter={StaticResource EmptyToVis}}" />
+                                    </Grid>
+                                    <styles:SHLinkButtonSmall Grid.Column="2" VerticalAlignment="Center" Margin="12,0,0,0"
+                                                              Content="{Binding CollapseLabel}" Click="ToggleDetails_Click" />
+                                    <CheckBox Grid.Column="3" Content="Вкл" Margin="14,0,0,0"
+                                              VerticalAlignment="Center" IsChecked="{Binding Enabled, Mode=TwoWay}"
+                                              Checked="Persist_Click" Unchecked="Persist_Click" />
+                                </Grid>
+
+                                <StackPanel Visibility="{Binding DetailsCollapsed, Converter={StaticResource InverseBoolVis}}">
+                                <Grid Margin="0,16,0,0">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="Auto" />
+                                        <ColumnDefinition Width="*" />
+                                        <ColumnDefinition Width="Auto" />
+                                        <ColumnDefinition Width="Auto" />
+                                        <ColumnDefinition Width="Auto" />
+                                    </Grid.ColumnDefinitions>
+                                    <Button Style="{StaticResource MixerButton}" Content="−" FontSize="18" Click="VolumeDown_Click" />
+                                    <ProgressBar Grid.Column="1" Margin="10,0" Height="8" Minimum="0" Maximum="100"
+                                                 Value="{Binding CurrentVolume}" VerticalAlignment="Center" />
+                                    <TextBlock Grid.Column="2" MinWidth="48" FontSize="16" FontWeight="SemiBold"
+                                               VerticalAlignment="Center" Margin="0,0,10,0">
+                                        <Run Text="{Binding CurrentVolume, Mode=OneWay}" />
+                                        <Run Text="%" />
+                                    </TextBlock>
+                                    <Button Grid.Column="3" Style="{StaticResource MixerButton}" Content="+" FontSize="18"
+                                            Margin="0,0,8,0" Click="VolumeUp_Click" />
+                                    <Button Grid.Column="4" Style="{StaticResource MixerButton}" MinWidth="108"
+                                            Content="{Binding MuteButtonText}" Click="Mute_Click" />
+                                </Grid>
+                                <TextBlock Text="{Binding StatusText}" Opacity="0.6" Margin="50,6,0,0" />
+
+                                <TextBlock Text="Подсветка" FontWeight="SemiBold" Margin="0,18,0,8" />
+                                <StackPanel Orientation="Horizontal">
+                                    <Button Tag="volume" Click="PickColor_Click" Style="{StaticResource MixerButton}" Margin="0,0,8,0">
+                                        <StackPanel Orientation="Horizontal">
+                                            <Border Width="16" Height="16" CornerRadius="4" Margin="0,0,8,0"
+                                                    Background="{Binding VolumeSwatch, Converter={StaticResource RgbBrush}}" />
+                                            <TextBlock Text="Громкость" />
+                                        </StackPanel>
+                                    </Button>
+                                    <Button Tag="mute" Click="PickColor_Click" Style="{StaticResource MixerButton}" Margin="0,0,8,0">
+                                        <StackPanel Orientation="Horizontal">
+                                            <Border Width="16" Height="16" CornerRadius="4" Margin="0,0,8,0"
+                                                    Background="{Binding MuteSwatch, Converter={StaticResource RgbBrush}}" />
+                                            <TextBlock Text="Без звука" />
+                                        </StackPanel>
+                                    </Button>
+                                    <Button Tag="pause" Click="PickColor_Click" Style="{StaticResource MixerButton}">
+                                        <StackPanel Orientation="Horizontal">
+                                            <Border Width="16" Height="16" CornerRadius="4" Margin="0,0,8,0"
+                                                    Background="{Binding PauseSwatch, Converter={StaticResource RgbBrush}}" />
+                                            <TextBlock Text="Пауза" />
+                                        </StackPanel>
+                                    </Button>
+                                </StackPanel>
+                                <Border Height="8" Margin="0,10,0,4" CornerRadius="4"
+                                        Background="{Binding LiveSwatch, Converter={StaticResource RgbBrush}}" />
+                                <TextBlock Text="{Binding LightingStateText}" Opacity="0.75" />
+                                <TextBlock Margin="0,4,0,0" Opacity="0.6" TextWrapping="Wrap"
+                                           Text="От 0% подсветка гаснет, на 100% горит выбранным цветом на полную яркость. Без звука и пауза загораются своим цветом. Если приложение закрыто, кнопка не горит. В профиле подсветки добавьте эффект «Громкость канала»: Start position — с какого светодиода начать, Led count — сколько кнопок в группе." />
+
+                                <TextBlock Text="Шаг одной кнопки" FontWeight="SemiBold" Margin="0,18,0,8" />
+                                <StackPanel Orientation="Horizontal">
+                                    <RadioButton Style="{StaticResource StepChip}" Content="1%" GroupName="{Binding StepGroup}"
+                                                 IsChecked="{Binding StepPercent, Mode=TwoWay, Converter={StaticResource EqualsInt}, ConverterParameter=1}"
+                                                 Checked="Persist_Click" />
+                                    <RadioButton Style="{StaticResource StepChip}" Content="2%" GroupName="{Binding StepGroup}"
+                                                 IsChecked="{Binding StepPercent, Mode=TwoWay, Converter={StaticResource EqualsInt}, ConverterParameter=2}"
+                                                 Checked="Persist_Click" />
+                                    <RadioButton Style="{StaticResource StepChip}" Content="5%" GroupName="{Binding StepGroup}"
+                                                 IsChecked="{Binding StepPercent, Mode=TwoWay, Converter={StaticResource EqualsInt}, ConverterParameter=5}"
+                                                 Checked="Persist_Click" />
+                                    <RadioButton Style="{StaticResource StepChip}" Content="10%" GroupName="{Binding StepGroup}"
+                                                 IsChecked="{Binding StepPercent, Mode=TwoWay, Converter={StaticResource EqualsInt}, ConverterParameter=10}"
+                                                 Checked="Persist_Click" />
+                                    <RadioButton Style="{StaticResource StepChip}" Content="25%" GroupName="{Binding StepGroup}"
+                                                 IsChecked="{Binding StepPercent, Mode=TwoWay, Converter={StaticResource EqualsInt}, ConverterParameter=25}"
+                                                 Checked="Persist_Click" />
+                                    <TextBlock Text="или" Opacity="0.55" VerticalAlignment="Center" Margin="4,0,10,0" />
+                                    <TextBox Width="58" Padding="6,4" VerticalAlignment="Center" TextAlignment="Center"
+                                             Text="{Binding StepText, UpdateSourceTrigger=LostFocus}" LostFocus="Persist_Click" />
+                                    <TextBlock Text="%" VerticalAlignment="Center" Margin="6,0,0,0" Opacity="0.7" />
+                                </StackPanel>
+
+                                <TextBlock Text="Приложение" FontWeight="SemiBold" Margin="0,18,0,8" />
+                                <TextBlock Text="Приложение ещё не выбрано" Opacity="0.55" Margin="0,0,0,8"
+                                           Visibility="{Binding HasTargets, Converter={StaticResource InverseBoolVis}}" />
+                                <ItemsControl ItemsSource="{Binding Targets}">
+                                    <ItemsControl.ItemTemplate>
+                                        <DataTemplate>
+                                            <Border Margin="0,0,0,6" Padding="10,8" CornerRadius="8"
+                                                    Background="#10FFFFFF" BorderBrush="#20FFFFFF" BorderThickness="1">
+                                                <Grid>
+                                                    <Grid.ColumnDefinitions>
+                                                        <ColumnDefinition Width="*" />
+                                                        <ColumnDefinition Width="Auto" />
+                                                    </Grid.ColumnDefinitions>
+                                                    <StackPanel VerticalAlignment="Center">
+                                                        <TextBlock Text="{Binding TitleLine}" FontWeight="SemiBold" TextWrapping="Wrap" />
+                                                        <TextBlock Text="{Binding DetailLine}" Opacity="0.6" FontSize="12" Margin="0,2,0,0" />
+                                                    </StackPanel>
+                                                    <Button Grid.Column="1" Style="{StaticResource MixerButton}" Content="Убрать"
+                                                            Margin="10,0,0,0" Click="RemoveTarget_Click" />
+                                                </Grid>
+                                            </Border>
+                                        </DataTemplate>
+                                    </ItemsControl.ItemTemplate>
+                                </ItemsControl>
+                                <StackPanel Orientation="Horizontal" Margin="0,4,0,0">
+                                    <styles:SHButtonPrimary Click="AddRunning_Click" Margin="0,0,8,0" Content="Выбрать приложение" />
+                                    <styles:SHLinkButton Click="AddManual_Click" Content="Ввести имя вручную" VerticalAlignment="Center" />
+                                </StackPanel>
+
+                                <Border Height="1" Background="#22FFFFFF" Margin="0,18,0,16" />
+
+                                <TextBlock Text="Кнопки устройства" FontWeight="SemiBold" />
+                                <TextBlock Opacity="0.6" Margin="0,2,0,8" TextWrapping="Wrap"
+                                           Text="Короткое нажатие ставит на паузу выбранное приложение и снова включает его. Удержание около полусекунды один раз выключает звук. Команда уходит в это приложение, а не в то, что играло последним. Следующий и предыдущий трек работают так же, если приложение умеет переключать композиции." />
+                                <ui:ControlsEditor ActionName="{Binding VolumeUpActionName}" FriendlyName="{Binding LouderFriendlyName}" />
+                                <ui:ControlsEditor ActionName="{Binding VolumeDownActionName}" FriendlyName="{Binding QuieterFriendlyName}" />
+                                <ui:ControlsEditor ActionName="{Binding MuteToggleActionName}" FriendlyName="{Binding MuteFriendlyName}" />
+                                <ui:ControlsEditor ActionName="{Binding NextTrackActionName}" FriendlyName="{Binding NextTrackFriendlyName}" />
+                                <ui:ControlsEditor ActionName="{Binding PreviousTrackActionName}" FriendlyName="{Binding PreviousTrackFriendlyName}" />
+
+                                <styles:SHLinkButtonSmall HorizontalAlignment="Left" Margin="0,8,0,0"
+                                                          Click="RemoveChannel_Click" Content="Удалить канал" />
+                                </StackPanel>
+                            </StackPanel>
+                        </Border>
+                    </DataTemplate>
+                </ItemsControl.ItemTemplate>
+            </ItemsControl>
+
+            <styles:SHExpander IsExpanded="False" Margin="0,4,0,0">
+                <styles:SHExpander.Header>
+                    <TextBlock Text="Свойства для подсветки" />
+                </styles:SHExpander.Header>
+                <TextBlock TextWrapping="Wrap" Opacity="0.8" LineHeight="20">
+                    <Run Text="N — номер на карточке канала." />
+                    <LineBreak />
+                    <Run Text="AppVolumePlugin.ChannelN.Volume — громкость 0–100" />
+                    <LineBreak />
+                    <Run Text="AppVolumePlugin.ChannelN.Volume01 — то же самое от 0 до 1, удобно для яркости" />
+                    <LineBreak />
+                    <Run Text="AppVolumePlugin.ChannelN.Muted — 1, если звук выключен" />
+                    <LineBreak />
+                    <Run Text="AppVolumePlugin.ChannelN.Paused — 1, если стоит пауза" />
+                    <LineBreak />
+                    <Run Text="AppVolumePlugin.ChannelN.LedR, LedG, LedB — итоговый цвет подсветки" />
+                    <LineBreak />
+                    <Run Text="AppVolumePlugin.ChannelN.Peak — уровень сигнала 0–100" />
+                    <LineBreak />
+                    <Run Text="AppVolumePlugin.ChannelN.IsRunning — 1, если приложение открыто" />
+                </TextBlock>
+            </styles:SHExpander>
+        </StackPanel>
+    </ScrollViewer>
+</UserControl>

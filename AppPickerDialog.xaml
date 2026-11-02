@@ -1,0 +1,54 @@
+<ui:SHDialogContentBase x:Class="User.AppVolumeController.AppPickerDialog"
+                        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+                        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+                        xmlns:local="clr-namespace:User.AppVolumeController"
+                        xmlns:styles="clr-namespace:SimHub.Plugins.Styles;assembly=SimHub.Plugins"
+                        xmlns:ui="clr-namespace:SimHub.Plugins.UI;assembly=SimHub.Plugins"
+                        mc:Ignorable="d"
+                        d:DesignHeight="520"
+                        d:DesignWidth="640">
+    <ui:SHDialogContentBase.Resources>
+        <local:EmptyToVisibilityConverter x:Key="EmptyToVis" />
+        <DataTemplate x:Key="AppItem">
+            <StackPanel Margin="2,3">
+                <TextBlock Text="{Binding ProcessName}" FontWeight="SemiBold" />
+                <TextBlock Text="{Binding Secondary}" Opacity="0.65" FontSize="12" TextTrimming="CharacterEllipsis" />
+            </StackPanel>
+        </DataTemplate>
+    </ui:SHDialogContentBase.Resources>
+    <DockPanel LastChildFill="True">
+        <StackPanel DockPanel.Dock="Top" Margin="0,0,0,10">
+            <TextBlock TextWrapping="Wrap" Margin="0,0,0,10"
+                       Text="Выберите программу, которой будут управлять кнопки. Двойной щелчок сразу подтверждает выбор." />
+            <Grid Margin="0,0,0,10">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="8" />
+                    <ColumnDefinition Width="Auto" />
+                </Grid.ColumnDefinitions>
+                <Grid>
+                    <TextBox x:Name="FilterBox" Padding="8,6" TextChanged="FilterBox_TextChanged" />
+                    <TextBlock Text="Поиск" IsHitTestVisible="False" Opacity="0.4" Margin="12,0,0,0"
+                               VerticalAlignment="Center"
+                               Visibility="{Binding Text, ElementName=FilterBox, Converter={StaticResource EmptyToVis}}" />
+                </Grid>
+                <styles:SHButtonSecondary Grid.Column="2" Click="Refresh_Click" Content="Обновить" />
+            </Grid>
+            <CheckBox x:Name="BindByTitleBox" Content="Учитывать заголовок окна" />
+            <TextBlock Opacity="0.6" Margin="22,4,0,0" TextWrapping="Wrap"
+                       Text="Обычно не нужно: Windows меняет громкость у всей программы сразу." />
+        </StackPanel>
+        <styles:SHTabControl>
+            <styles:SHTabItem Header="Со звуком">
+                <ListBox x:Name="AudioList" ItemTemplate="{StaticResource AppItem}" MinHeight="280"
+                         SelectionChanged="List_SelectionChanged" MouseDoubleClick="List_MouseDoubleClick" />
+            </styles:SHTabItem>
+            <styles:SHTabItem Header="Все окна">
+                <ListBox x:Name="WindowList" ItemTemplate="{StaticResource AppItem}" MinHeight="280"
+                         SelectionChanged="List_SelectionChanged" MouseDoubleClick="List_MouseDoubleClick" />
+            </styles:SHTabItem>
+        </styles:SHTabControl>
+    </DockPanel>
+</ui:SHDialogContentBase>

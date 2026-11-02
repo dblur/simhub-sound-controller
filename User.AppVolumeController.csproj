@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project Sdk="Microsoft.NET.Sdk.WindowsDesktop">
+  <PropertyGroup>
+    <TargetFramework>net48</TargetFramework>
+    <UseWPF>true</UseWPF>
+    <UseWindowsForms>true</UseWindowsForms>
+    <LangVersion>8.0</LangVersion>
+    <AssemblyName>User.AppVolumeController</AssemblyName>
+    <RootNamespace>User.AppVolumeController</RootNamespace>
+    <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
+    <GenerateAssemblyInfo>true</GenerateAssemblyInfo>
+    <AssemblyTitle>App Volume Controller</AssemblyTitle>
+    <Product>SimHub App Volume Controller</Product>
+    <Company>dmitblur</Company>
+    <Version>1.0.0</Version>
+    <Deterministic>true</Deterministic>
+    <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
+    <DoNotReferenceWinRT>true</DoNotReferenceWinRT>
+    <ProjectGuid>{B7C2D1E4-9A31-4F6C-8E20-2C6A1F4D8B11}</ProjectGuid>
+    <StartAction>Program</StartAction>
+    <StartProgram>$(SimHubPath)SimHubWPF.exe</StartProgram>
+  </PropertyGroup>
+
+  <PropertyGroup>
+    <SimHubPath Condition="'$(SIMHUB_INSTALL_PATH)' != ''">$(SIMHUB_INSTALL_PATH)</SimHubPath>
+    <SimHubPath Condition="'$(SimHubPath)' == ''">C:\Program Files (x86)\SimHub\</SimHubPath>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.Windows.SDK.Contracts" Version="10.0.22621.2428" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Reference Include="System.Drawing" />
+    <Reference Include="System.Runtime.WindowsRuntime">
+      <HintPath>C:\Windows\Microsoft.NET\Framework64\v4.0.30319\System.Runtime.WindowsRuntime.dll</HintPath>
+      <Private>false</Private>
+    </Reference>
+    <Reference Include="GameReaderCommon">
+      <HintPath>$(SimHubPath)GameReaderCommon.dll</HintPath>
+      <Private>false</Private>
+    </Reference>
+    <Reference Include="SimHub.Plugins">
+      <HintPath>$(SimHubPath)SimHub.Plugins.dll</HintPath>
+      <Private>false</Private>
+    </Reference>
+    <Reference Include="SimHub.Logging">
+      <HintPath>$(SimHubPath)SimHub.Logging.dll</HintPath>
+      <Private>false</Private>
+    </Reference>
+    <Reference Include="log4net">
+      <HintPath>$(SimHubPath)log4net.dll</HintPath>
+      <Private>false</Private>
+    </Reference>
+    <Reference Include="MahApps.Metro">
+      <HintPath>$(SimHubPath)MahApps.Metro.dll</HintPath>
+      <Private>false</Private>
+    </Reference>
+    <Reference Include="MahApps.Metro.IconPacks.Core">
+      <HintPath>$(SimHubPath)MahApps.Metro.IconPacks.Core.dll</HintPath>
+      <Private>false</Private>
+    </Reference>
+    <Reference Include="MahApps.Metro.IconPacks.Material">
+      <HintPath>$(SimHubPath)MahApps.Metro.IconPacks.Material.dll</HintPath>
+      <Private>false</Private>
+    </Reference>
+    <Reference Include="NAudio.Core">
+      <HintPath>$(SimHubPath)NAudio.Core.dll</HintPath>
+      <Private>false</Private>
+    </Reference>
+    <Reference Include="NAudio.Wasapi">
+      <HintPath>$(SimHubPath)NAudio.Wasapi.dll</HintPath>
+      <Private>false</Private>
+    </Reference>
+    <Reference Include="WoteverCommon">
+      <HintPath>$(SimHubPath)WoteverCommon.dll</HintPath>
+      <Private>false</Private>
+    </Reference>
+    <Reference Include="WoteverLocalization">
+      <HintPath>$(SimHubPath)WoteverLocalization.dll</HintPath>
+      <Private>false</Private>
+    </Reference>
+  </ItemGroup>
+
+  <Target Name="CopyToSimHub" AfterTargets="Build">
+    <Exec Command="powershell -NoProfile -ExecutionPolicy Bypass -File &quot;$(MSBuildProjectDirectory)\install.ps1&quot; -SkipBuild -Dll &quot;$(TargetPath)&quot; -SimHub &quot;$(SimHubPath)&quot;" />
+  </Target>
+</Project>

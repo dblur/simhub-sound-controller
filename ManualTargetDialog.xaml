@@ -1,0 +1,14 @@
+<ui:SHDialogContentBase x:Class="User.AppVolumeController.ManualTargetDialog"
+                        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                        xmlns:ui="clr-namespace:SimHub.Plugins.UI;assembly=SimHub.Plugins">
+    <StackPanel>
+        <TextBlock Text="Имя программы" Margin="0,0,0,6" />
+        <TextBox x:Name="ProcessBox" Padding="8,6" />
+        <TextBlock Opacity="0.55" Margin="0,4,0,0" Text="Без пути и без .exe. Например: Discord или Spotify." />
+        <TextBlock Text="Заголовок окна" Margin="0,14,0,6" />
+        <TextBox x:Name="TitleBox" Padding="8,6" />
+        <TextBlock TextWrapping="Wrap" Opacity="0.55" Margin="0,4,0,0"
+                   Text="Можно оставить пустым. Тогда кнопки управляют всей программой." />
+    </StackPanel>
+</ui:SHDialogContentBase>

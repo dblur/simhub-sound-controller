@@ -37,13 +37,22 @@ if (Test-Path $previous) {
 }
 
 $copied = $false
-try {
-    Copy-Item -Force $Dll $destination
-    $copied = $true
+for ($try = 0; $try -lt 3 -and -not $copied; $try++) {
+    try {
+        Copy-Item -Force $Dll $destination
+        $copied = $true
+    }
+    catch {
+        if ($try -lt 2) { Start-Sleep -Milliseconds 400 }
+    }
 }
-catch {
+
+if (-not $copied) {
     if (Test-Path $previous) {
         Remove-Item $previous -Force -ErrorAction SilentlyContinue
+    }
+    if (Test-Path $previous) {
+        $previous = "$destination.$([DateTime]::Now.ToString('HHmmss')).old"
     }
     [IO.File]::Move($destination, $previous)
     Copy-Item -Force $Dll $destination

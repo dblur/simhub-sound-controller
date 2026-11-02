@@ -11,6 +11,7 @@
         <local:EqualsIntConverter x:Key="EqualsInt" />
         <local:EmptyToVisibilityConverter x:Key="EmptyToVis" />
         <local:InverseBoolToVisibilityConverter x:Key="InverseBoolVis" />
+        <local:BoolToVisibilityConverter x:Key="BoolVis" />
         <local:RgbBrushConverter x:Key="RgbBrush" />
 
         <Style x:Key="MixerButton" TargetType="Button">
@@ -166,11 +167,24 @@
                                         </StackPanel>
                                     </Button>
                                 </StackPanel>
+                                <CheckBox Margin="0,10,0,0" Content="Свой цвет, когда приложение закрыто"
+                                          IsChecked="{Binding ShowInactiveColor, Mode=TwoWay}"
+                                          Checked="Persist_Click" Unchecked="Persist_Click" />
+                                <Button Tag="inactive" Click="PickColor_Click" Style="{StaticResource MixerButton}"
+                                        Margin="0,8,0,0" HorizontalAlignment="Left"
+                                        Visibility="{Binding ShowInactiveColor, Converter={StaticResource BoolVis}}">
+                                    <StackPanel Orientation="Horizontal">
+                                        <Border Width="16" Height="16" CornerRadius="4" Margin="0,0,8,0"
+                                                Background="{Binding InactiveSwatch, Converter={StaticResource RgbBrush}}" />
+                                        <TextBlock Text="Закрыто" />
+                                    </StackPanel>
+                                </Button>
                                 <Border Height="8" Margin="0,10,0,4" CornerRadius="4"
-                                        Background="{Binding LiveSwatch, Converter={StaticResource RgbBrush}}" />
+                                        Background="{Binding LiveSwatch, Converter={StaticResource RgbBrush}}"
+                                        Visibility="{Binding LeavesWheelLighting, Converter={StaticResource InverseBoolVis}}" />
                                 <TextBlock Text="{Binding LightingStateText}" Opacity="0.75" />
                                 <TextBlock Margin="0,4,0,0" Opacity="0.6" TextWrapping="Wrap"
-                                           Text="От 0% подсветка гаснет, на 100% горит выбранным цветом на полную яркость. Без звука и пауза загораются своим цветом. Если приложение закрыто, кнопка не горит. В профиле подсветки добавьте эффект «Громкость канала»: Start position — с какого светодиода начать, Led count — сколько кнопок в группе." />
+                                           Text="От 0% подсветка гаснет, на 100% горит выбранным цветом на полную яркость. Без звука и пауза загораются своим цветом. Если приложение закрыто и свой цвет выключен, кнопка не закрашивается и остаётся обычная подсветка штурвала. В профиле подсветки у эффекта «Громкость канала» задаются Start position и Led count." />
 
                                 <TextBlock Text="Шаг одной кнопки" FontWeight="SemiBold" Margin="0,18,0,8" />
                                 <StackPanel Orientation="Horizontal">

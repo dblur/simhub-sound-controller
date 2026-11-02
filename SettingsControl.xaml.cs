@@ -116,6 +116,8 @@ namespace User.AppVolumeController
                 current = System.Drawing.Color.FromArgb(channel.MuteR, channel.MuteG, channel.MuteB);
             else if (kind == "pause")
                 current = System.Drawing.Color.FromArgb(channel.PauseR, channel.PauseG, channel.PauseB);
+            else if (kind == "inactive")
+                current = System.Drawing.Color.FromArgb(channel.InactiveR, channel.InactiveG, channel.InactiveB);
             else
                 current = System.Drawing.Color.FromArgb(channel.ColorR, channel.ColorG, channel.ColorB);
 
@@ -137,6 +139,13 @@ namespace User.AppVolumeController
                     channel.PauseR = dialog.Color.R;
                     channel.PauseG = dialog.Color.G;
                     channel.PauseB = dialog.Color.B;
+                }
+                else if (kind == "inactive")
+                {
+                    channel.InactiveR = dialog.Color.R;
+                    channel.InactiveG = dialog.Color.G;
+                    channel.InactiveB = dialog.Color.B;
+                    channel.InactiveColorReady = true;
                 }
                 else
                 {

@@ -23,7 +23,7 @@
 
   <PropertyGroup>
     <SimHubPath Condition="'$(SIMHUB_INSTALL_PATH)' != ''">$(SIMHUB_INSTALL_PATH)</SimHubPath>
-    <SimHubPath Condition="'$(SimHubPath)' == ''">C:\Program Files (x86)\SimHub\</SimHubPath>
+    <SimHubPath Condition="'$(SimHubPath)' == ''">C:\Program Files (x86)\SimHub</SimHubPath>
   </PropertyGroup>
 
   <ItemGroup>
@@ -83,6 +83,6 @@
   </ItemGroup>
 
   <Target Name="CopyToSimHub" AfterTargets="Build">
-    <Exec Command="powershell -NoProfile -ExecutionPolicy Bypass -File &quot;$(MSBuildProjectDirectory)\install.ps1&quot; -SkipBuild -Dll &quot;$(TargetPath)&quot; -SimHub &quot;$(SimHubPath)&quot;" />
+    <Exec Command="powershell -NoProfile -ExecutionPolicy Bypass -Command &quot;$env:SIMHUB_INSTALL_PATH='$(SimHubPath)'; &amp; '$(MSBuildProjectDirectory)\install.ps1' -SkipBuild -Dll '$(TargetPath)'&quot;" />
   </Target>
 </Project>

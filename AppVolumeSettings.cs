@@ -253,6 +253,22 @@ namespace User.AppVolumeController
 
         public bool ColorsInitialized { get; set; }
 
+        private bool _showInactiveColor;
+
+        public bool ShowInactiveColor
+        {
+            get => _showInactiveColor;
+            set
+            {
+                if (_showInactiveColor == value) return;
+                _showInactiveColor = value;
+                OnPropertyChanged();
+                TouchLighting();
+            }
+        }
+
+        public bool InactiveColorReady { get; set; }
+
         public int ColorR { get; set; }
         public int ColorG { get; set; }
         public int ColorB { get; set; }
@@ -262,10 +278,14 @@ namespace User.AppVolumeController
         public int PauseR { get; set; }
         public int PauseG { get; set; }
         public int PauseB { get; set; }
+        public int InactiveR { get; set; }
+        public int InactiveG { get; set; }
+        public int InactiveB { get; set; }
 
         public string VolumeSwatch => ColorR + "," + ColorG + "," + ColorB;
         public string MuteSwatch => MuteR + "," + MuteG + "," + MuteB;
         public string PauseSwatch => PauseR + "," + PauseG + "," + PauseB;
+        public string InactiveSwatch => InactiveR + "," + InactiveG + "," + InactiveB;
 
         private string _liveSwatch = "0,0,0";
         private string _lightingStateText = "";
@@ -275,20 +295,33 @@ namespace User.AppVolumeController
 
         public void EnsureColors()
         {
-            if (ColorsInitialized)
-                return;
+            bool changed = false;
+            if (!ColorsInitialized)
+            {
+                ColorR = 0;
+                ColorG = 170;
+                ColorB = 255;
+                MuteR = 255;
+                MuteG = 40;
+                MuteB = 40;
+                PauseR = 255;
+                PauseG = 160;
+                PauseB = 0;
+                ColorsInitialized = true;
+                changed = true;
+            }
 
-            ColorR = 0;
-            ColorG = 170;
-            ColorB = 255;
-            MuteR = 255;
-            MuteG = 40;
-            MuteB = 40;
-            PauseR = 255;
-            PauseG = 160;
-            PauseB = 0;
-            ColorsInitialized = true;
-            NotifyColors();
+            if (!InactiveColorReady)
+            {
+                InactiveR = 120;
+                InactiveG = 120;
+                InactiveB = 120;
+                InactiveColorReady = true;
+                changed = true;
+            }
+
+            if (changed)
+                NotifyColors();
         }
 
         public void NotifyColors()
@@ -296,24 +329,31 @@ namespace User.AppVolumeController
             OnPropertyChanged(nameof(VolumeSwatch));
             OnPropertyChanged(nameof(MuteSwatch));
             OnPropertyChanged(nameof(PauseSwatch));
+            OnPropertyChanged(nameof(InactiveSwatch));
             TouchLighting();
         }
 
+        public bool LeavesWheelLighting => !VolumeLighting.For(this).Paint;
+
         public void TouchLighting()
         {
-            var color = VolumeLighting.For(this);
-            var swatch = color.R + "," + color.G + "," + color.B;
+            var light = VolumeLighting.For(this);
+            var swatch = light.Paint ? light.R + "," + light.G + "," + light.B : "0,0,0";
             if (_liveSwatch != swatch)
             {
                 _liveSwatch = swatch;
                 OnPropertyChanged(nameof(LiveSwatch));
             }
 
+            OnPropertyChanged(nameof(LeavesWheelLighting));
+
             string state;
             if (!Enabled)
                 state = "Канал выключен";
-            else if (!IsRunning)
+            else if (!IsRunning && ShowInactiveColor)
                 state = "Приложение закрыто";
+            else if (!IsRunning)
+                state = "Подсветка штурвала";
             else if (IsPaused && IsMuted)
                 state = "Пауза и без звука";
             else if (IsPaused)

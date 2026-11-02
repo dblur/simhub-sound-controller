@@ -45,7 +45,8 @@ namespace User.AppVolumeController
         {
             int count = LedCount < 1 ? 1 : LedCount;
             result.Clear(count);
-            var color = VolumeLighting.For(FindChannel());
+            var light = VolumeLighting.For(FindChannel());
+            var color = light.Paint ? light.Color : VolumeLighting.Clear;
             for (int i = 0; i < count; i++)
                 result[i] = color;
             return result;
